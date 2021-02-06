@@ -5,6 +5,7 @@
   "scripts": {
     "start": "node ./bin/www",
     "findCategories": "node getCategories.js",
+    "getImageKeywords": "node getImageKeywords.js",
     "findImages": "node getImages.js"
   },
   "dependencies": {

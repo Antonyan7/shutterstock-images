@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const PhotoSchema = new mongoose.Schema({
   _id: {type: mongoose.Schema.ObjectId, default: new mongoose.Types.ObjectId()},
+  photo_id: {type: String},
   name: {type: String},
   aspect: {type: Number},
   thumb: {
@@ -11,7 +12,7 @@ const PhotoSchema = new mongoose.Schema({
   },
   keywords: {type: Array},
   description: {type: String},
-  image_type: {type: String}
+  image_type: {type: String},
 });
 
 module.exports = mongoose.model('photo', PhotoSchema);
