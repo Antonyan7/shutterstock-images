@@ -10,21 +10,63 @@ let count = 0;
 const imagesApi = new sstk.ImagesApi()
 
 const getKeywordsAndUpdatePhoto = async () => {
-    const queryParams = {
-        'language': 'es',
-    }
 
-    const image = await Photo.find().skip(count).limit(1).exec();
-    if(image[0]){
-        const data = await imagesApi.getImage(image[0].photo_id, queryParams);
-        if(image[0].keywords.length === 0){
-            const update = { $push: { keywords: data.keywords } };
-            await Photo.updateOne({ photo_id: image[0].photo_id }, update, (err, res) => {
-                console.log(res);
-            });
+    const images = await Photo.find().skip(count).limit(20).exec();
+    const data = images.map(image => {
+        return {
+            id: image.photo_id,
+            keywords: image.keywords
         }
-    }
-    count++;
+    })
+
+    const ids = data.map(item => {
+        return item.id;
+    })
+
+
+    const queryParams = {
+        "view": "full"
+    };
+
+    // imagesApi.getImageList(queryParams)
+    //     .then((data) => {
+    //         console.log(data);
+    //     })
+    //     .catch((error) => {
+    //         console.error(error);
+    //     });
+
+    // console.log(ids);
+    const response = await imagesApi.getImageList(ids, queryParams);
+
+    const imagesKeywords = response.data.map(image => {
+        return {
+            id: image.id,
+            keywords: image.keywords
+        }
+    });
+
+    // console.log(imagesKeywords);
+    imagesKeywords.map(data => {
+        const update = { $push: { keywords: data.keywords } };
+        Photo.updateOne({ photo_id: data.id }, update, (err, res) => {
+            console.log(res);
+        });
+    })
+    // if(image[0]){
+    // console.log(ids);
+    // const response = await imagesApi.getImageList(ids, queryParams);
+        // console.log(response);
+    //     console.log(data);
+        // console.log(data);
+        // if(image[0].keywords.length === 0){
+        //     const update = { $push: { keywords: data.keywords } };
+        //     await Photo.updateOne({ photo_id: image[0].photo_id }, update, (err, res) => {
+        //         console.log(res);
+        //     });
+        // }
+    // }
+    count += 20;
 }
 
 const j = schedule.scheduleJob('*/5 * * * * *', async function () {
