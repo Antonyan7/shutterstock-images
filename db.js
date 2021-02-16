@@ -1,5 +1,5 @@
 // const uri = 'mongodb+srv://root:root@cluster0.mbavh.mongodb.net/wire?keepAlive=true&poolSize=30&autoReconnect=true&socketTimeoutMS=360000&connectTimeoutMS=360000'
-const uri = 'mongodb://localhost:27010/shutterstock'
+const uri = 'mongodb://localhost:27017/shutterstock'
 const mongoose = require('mongoose')
 
 mongoose.connect(uri, {useNewUrlParser: true, useUnifiedTopology: true})

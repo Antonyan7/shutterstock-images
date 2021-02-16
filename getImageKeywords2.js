@@ -5,7 +5,7 @@ const applicationClientId = 'BOlGFXzNdcjBjpyElk9NQUtj2mzM34xA'
 const applicationClientSecret = 'lola8BBfGxhc8G5I'
 sstk.setBasicAuth(applicationClientId, applicationClientSecret)
 const schedule = require('node-schedule')
-let count = 0;
+let count = 1000000;
 
 const imagesApi = new sstk.ImagesApi()
 
@@ -38,7 +38,7 @@ const getKeywordsAndUpdatePhoto = async () => {
     //     });
 
     // console.log(ids);
-if(count < 1000000){
+if( count < 2000000){
     const response = await imagesApi.getImageList(ids, queryParams);
 
     const imagesKeywords = response.data.map(image => {
