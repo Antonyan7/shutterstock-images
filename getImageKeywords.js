@@ -26,7 +26,7 @@ const getKeywordsAndUpdatePhoto = async () => {
 
     const queryParams = {
         "view": "full",
-	"language": "en"
+	    "language": "en"
     };
 
     // imagesApi.getImageList(queryParams)
@@ -48,13 +48,20 @@ if(count < 1000000){
         }
     });
 
-    // console.log(imagesKeywords);
-    imagesKeywords.map(data => {
-        const update = { $push: { keywords: data.keywords } };
-        Photo.updateOne({ photo_id: data.id }, {keywords: data.keywords}, (err, res) => {
-            console.log(res);
-        });
+    imagesKeywords.map(async data => {
+        // const update = { $push: { keywords: data.keywords } };
+        // console.log(data.id);
+        // Photo.updateOne({ photo_id: data.id }, {keywords: data.keywords}, (err, res) => {
+        //     console.log(res);
+        // });
+        const photo = await Photo.findOne({ photo_id: data.id });
+        if(photo.keywords.length === 0) {
+            photo.overwrite({ keywords: data.keywords });
+            console.log(photo.keywords);
+            const res = await photo.save();
+        }
     })
+    // console.log(imagesKeywords);
 }
     // if(image[0]){
     // console.log(ids);
