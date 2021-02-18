@@ -4,7 +4,7 @@ require('./db');
 const applicationClientId = 'BOlGFXzNdcjBjpyElk9NQUtj2mzM34xA'
 const applicationClientSecret = 'lola8BBfGxhc8G5I'
 sstk.setBasicAuth(applicationClientId, applicationClientSecret)
-let count = 0;
+let count = 5000000;
 
 const imagesApi = new sstk.ImagesApi()
 
@@ -27,7 +27,7 @@ const getKeywordsAndUpdatePhoto = async () => {
         "language": "en"
     };
 
-    if (count < 1000000) {
+    if (count < 5600000) {
         try {
             const response = await imagesApi.getImageList(ids, queryParams);
             const imagesKeywords = response.data.map(image => {
@@ -39,10 +39,10 @@ const getKeywordsAndUpdatePhoto = async () => {
 
             imagesKeywords.map(async (data, index) => {
                 // if (data[index] && data[index].keywords.length === 0) {
-                    const update = {$set: {keywords: data.keywords}};
-                    await Photo.updateOne({photo_id: data.id}, update, {overwrite: true}, (err, res) => {
-                        console.log(res);
-                    });
+                const update = {$set: {keywords: data.keywords}};
+                await Photo.updateOne({photo_id: data.id}, update, {overwrite: true}, (err, res) => {
+                    console.log(res);
+                });
                 // } else {
                 //     console.log("already Keywords exists")
                 // }
@@ -58,7 +58,7 @@ const getKeywordsAndUpdatePhoto = async () => {
 
 async function recursiveKeywordMining() {
     const response = await getKeywordsAndUpdatePhoto();
-    if (response && count < 1000000) {
+    if (response && count < 5600000) {
         await recursiveKeywordMining()
     }
 }
