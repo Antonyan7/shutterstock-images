@@ -1,8 +1,8 @@
 const sstk = require('shutterstock-api')
 const Photo = require('./models/Photo')
 require('./db');
-const applicationClientId = 'BOlGFXzNdcjBjpyElk9NQUtj2mzM34xA'
-const applicationClientSecret = 'lola8BBfGxhc8G5I'
+const applicationClientId = 'VDAeLgRTZG7yxhP4ZmVHHmgJKeGLkscA'
+const applicationClientSecret = 'oreejO8jxvwo4mEM'
 sstk.setBasicAuth(applicationClientId, applicationClientSecret)
 let count = 3000000;
 
