@@ -83,7 +83,9 @@ async function recursiveKeywordMining() {
     const response = await getKeywordsAndUpdatePhoto();
 
     if (response && count < 5600000) {
-        await recursiveKeywordMining()
+        setTimeout(async () => {
+            await recursiveKeywordMining()
+        }, 272.727273)
     }
 }
 
