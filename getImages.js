@@ -1,12 +1,21 @@
 const sstk = require('shutterstock-api')
 const Keyword = require('./models/Keyword')
+const Count = require('./models/Count')
 const Photo = require('./models/Photo')
 const schedule = require('node-schedule')
+const process = require('process');
 require('./db')
 let count = 1
 let page = 1
 let keywords = [];
-let step = -1
+let step = -1;
+(async () => {
+  const data = await Count.find({});
+  if(data) {
+    page = data[0].page
+    count = data[0].keyword_step
+  }
+})();
 const applicationClientId = 'BOlGFXzNdcjBjpyElk9NQUtj2mzM34xA'
 const applicationClientSecret = 'lola8BBfGxhc8G5I'
 sstk.setBasicAuth(applicationClientId, applicationClientSecret)
@@ -14,6 +23,18 @@ sstk.setBasicAuth(applicationClientId, applicationClientSecret)
 const imagesApi = new sstk.ImagesApi()
 
 let images = [];
+
+function exitHandler(options, exitCode) {
+  Count.collection.insertOne({keyword_step: 1, page: 1}, {ordered: false}, onInsert)
+  const dataToSave = {
+    keyword_step: count,
+    page: page
+  }
+  Count.collection.deleteMany({});
+  Count.collection.insertOne(dataToSave, {ordered: false}, onInsert);
+}
+process.on('SIGINT', exitHandler.bind(this, {exit:true}));
+process.on('uncaughtException', exitHandler.bind(this, {exit:true}));
 
 // const getKeywords = async () => {
 //   console.log("WAKE UP")
@@ -35,6 +56,8 @@ let images = [];
 //   }
 // }
 const getImages = async () => {
+  console.log(count);
+  console.log(step);
   const queryParams = {
     'per_page': 500,
     page: page,
@@ -59,6 +82,7 @@ const getImages = async () => {
 }
 
 function onInsert (err, docs) {
+  console.log(1111);
   if (err) {
     console.log(err)
   } else {
