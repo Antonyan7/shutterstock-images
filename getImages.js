@@ -8,12 +8,12 @@ require('./db')
 let count = 1
 let page = 1
 let keywords = [];
-let step = -1;
+// let step = -1;
 (async () => {
   const data = await Count.find({});
-  if(data) {
-    page = data[0].page
-    count = data[0].keyword_step
+  if(data[0]) {
+    page = parseInt(data[0].page)
+    count = parseInt(data[0].keyword_step)
   }
 })();
 const applicationClientId = 'BOlGFXzNdcjBjpyElk9NQUtj2mzM34xA'
@@ -25,7 +25,6 @@ const imagesApi = new sstk.ImagesApi()
 let images = [];
 
 function exitHandler(options, exitCode) {
-  Count.collection.insertOne({keyword_step: 1, page: 1}, {ordered: false}, onInsert)
   const dataToSave = {
     keyword_step: count,
     page: page
@@ -56,8 +55,9 @@ process.on('uncaughtException', exitHandler.bind(this, {exit:true}));
 //   }
 // }
 const getImages = async () => {
-  console.log(count);
-  console.log(step);
+  console.log(count, "count");
+  console.log(page, "page");
+  console.log(keywords[count].name);
   const queryParams = {
     'per_page': 500,
     page: page,
@@ -82,32 +82,30 @@ const getImages = async () => {
 }
 
 function onInsert (err, docs) {
-  console.log(1111);
   if (err) {
-    console.log(err)
+    // console.log(err)
   } else {
-    console.log(docs)
+    // console.log(docs)
     console.info('stores')
   }
 }
 
-// function sleep(time) {
-//   return new Promise((resolve, reject) => {
-//     setTimeout(resolve, time)
-//   })
-// }
-
 const j = schedule.scheduleJob('*/5 * * * * *', async function () {
-  keywords = await Keyword.find({})
+  keywords = await Keyword.find({ scraped: 0 }).exec();
+  console.log(keywords);
   if (count < keywords.length) {
-    console.log("FUCKED UP?")
     await getImages();
     Photo.collection.insertMany(images, {ordered: false}, onInsert)
     count += 1
-    step = -1;
+    // step = -1;
   } else {
-    console.log("FUCKED UP? YES", count, keywords.length)
-    page += 1
-    count = 0
+    if(page > 4) {
+      page += 1
+      count = 0
+      console.log("PAGE IS CHANGED")
+    } else {
+      await Keyword.updateMany({"scraped": 0}, {"$set":{"scraped": 1}}, {"multi": true}, (err, writeResult) => {});
+      console.log("KEYWORD PARSING IS FINISHED", `COUNT - ${count}`, `KEYWORDS LENGTH - ${keywords.length}`)
+    }
   }
 })
